@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👾 박상덕의 8-BIT WORLD ✨</title>
+    <!-- 구글 픽셀 폰트 (Press Start 2P) & 가독성 높은 픽셀느낌 폰트 (DungGeunMo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DungGeunMo&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* ==================== 1. CSS 변수 및 기본 스타일 ==================== */
+        :root {
+            /* 라이트 테마 (밝은 파스텔 8비트) */
+            --bg-color: #ffd6e8;
+            --bg-pattern: #ffc0d9;
+            --container-bg: #fff0f6;
+            --card-bg: #ffffff;
+            --card-back-bg: #ffe3ec;
+            --text-color: #4a2e35;
+            --primary-color: #ff5c8d;
+            --secondary-color: #845ef7;
+            --accent-color: #ffb703;
+            --border-color: #4a2e35;
+            --shadow-color: rgba(74, 46, 53, 0.4);
+            --sparkle-color: #ff3385;
+            --pixel-border: 4px solid var(--border-color);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 10px;
+            font-family: 'DungGeunMo', monospace;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--bg-pattern) 15%, transparent 16%);
+            background-size: 20px 20px;
+            color: var(--text-color);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* 캔버스 (마우스 반짝이 파티클) */
+        #sparkleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            border: var(--pixel-border);
+            box-shadow: 8px 8px 0px var(--shadow-color);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+        }
+
+        /* 헤더 */
+        header {
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px;
+            border-bottom: 4px dashed var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        h1.title {
+            font-family: 'Press Start 2P', 'DungGeunMo', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            text-shadow: 3px 3px 0px var(--border-color);
+            margin: 10px 0 10px 0;
+            letter-spacing: -1px;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            background: var(--accent-color);
+            color: #000;
+            display: inline-block;
+            padding: 4px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* 섹션 공통 스타일 */
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 1px 1px 0px var(--border-color);
+        }
+
+        .section-title::before {
+            content: "★";
+            color: var(--accent-color);
+        }
+
+        .arcade-box {
+            background: var(--card-bg);
+            border: 3px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 4px 4px 0px var(--shadow-color);
+        }
+
+        /* 퀴즈 아이템 스타일 */
+        .quiz-item {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed var(--border-color);
+        }
+        .quiz-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        /* ==================== 2. 카드가 뒤집히는 좋아하는 것 섹션 ==================== */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            height: 220px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border: 3px solid var(--border-color);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            box-shadow: 3px 3px 0px var(--shadow-color);
+        }
+
+        .card-front {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .card-front .icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .card-front .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .card-front .click-hint {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            margin-top: 8px;
+            background: var(--card-back-bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .card-back {
+            background-color: var(--card-back-bg);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            justify-content: center;
+        }
+
+        .card-back p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-break: keep-all;
+            margin: 0;
+        }
+
+        /* ==================== 3. OX 퀴즈 섹션 ==================== */
+        .quiz-question {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: var(--card-back-bg);
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .quiz-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn-ox {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            font-family: 'Press Start 2P', cursive;
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--border-color);
+            transition: all 0.1s;
+        }
+
+        .btn-o {
+            background: #51cf66;
+            color: white;
+        }
+
+        .btn-x {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-ox:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px var(--border-color);
+        }
+
+        .quiz-result {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        /* ==================== 4. 랜덤 점심 메뉴 추천 ==================== */
+        .lunch-box {
+            text-align: center;
+        }
+
+        .menu-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-back-bg);
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            padding: 10px;
+        }
+
+        .btn-action {
+            background: var(--primary-color);
+            color: white;
+            font-family: 'DungGeunMo', monospace;
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            border: 3px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--border-color);
+            transition: all 0.1s;
+            font-weight: bold;
+        }
+
+        .btn-action:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0px var(--border-color);
+        }
+
+        /* ==================== 5. 10초 광클 미니게임 ==================== */
+        .game-box {
+            text-align: center;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            background: var(--card-back-bg);
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-clicker {
+            width: 100%;
+            max-width: 300px;
+            height: 80px;
+            font-size: 1.3rem;
+            background: var(--accent-color);
+            color: #000;
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 5px 5px 0px var(--border-color);
+            font-family: 'DungGeunMo', monospace;
+            font-weight: bold;
+        }
+
+        .btn-clicker:active {
+            transform: translate(3px, 3px);
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        .btn-clicker:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* 모바일 대응 레이아웃 조절 */
+        @media (max-width: 600px) {
+            h1.title {
+                font-size: 1.3rem;
+            }
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 반짝이 애니메이션용 캔버스 -->
+    <canvas id="sparkleCanvas"></canvas>
+
+    <div class="container">
+        <!-- 헤더 -->
+        <header>
+            <h1 class="title">박상덕의 8-BIT WORLD</h1>
+            <div class="subtitle">✨ 빤짝빤짝 레트로 플레이어 ✨</div>
+        </header>
+
+        <!-- 섹션 1: 좋아하는 것 3가지 (카드 뒤집기) -->
+        <div class="section-title">상덕이가 좋아하는 3가지</div>
+        <div class="card-container">
+            <!-- 카드 1 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="icon">📚</div>
+                        <div class="card-title">책 읽기</div>
+                        <div class="click-hint">터치해서 뒤집어 봐!</div>
+                    </div>
+                    <div class="card-back">
+                        <p>📖 읽다 보면 내가 몰랐던 사실까지 전~부 다 알 수 있어!</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 카드 2 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="icon">🎨</div>
+                        <div class="card-title">그림 그리기</div>
+                        <div class="click-hint">터치해서 이유 보기!</div>
+                    </div>
+                    <div class="card-back">
+                        <p>🎨 심신 안정에도 도움이 되고, 무엇보다 재밌어!</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 카드 3 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="icon">🎧</div>
+                        <div class="card-title">노래 듣기</div>
+                        <div class="click-hint">터치해서 이유 보기!</div>
+                    </div>
+                    <div class="card-back">
+                        <p>🎵 노래를 들으면서 얼마든지 상상의 나래로 빠져들 수 있어!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- 섹션 2: OX 퀴즈 -->
+        <div class="section-title">상덕's OX 퀴즈</div>
+        <div class="arcade-box">
+            <!-- 문제 1 -->
+            <div class="quiz-item">
+                <div class="quiz-question">
+                    ❓ Q1. "상덕이가 좋아하는 책 종류는 <b style="color:var(--primary-color);">이론 서적</b>이다!"
+                </div>
+                <div class="quiz-buttons">
+                    <button class="btn-ox btn-o" onclick="checkQuiz(1, true)">O</button>
+                    <button class="btn-ox btn-x" onclick="checkQuiz(1, false)">X</button>
+                </div>
+                <div class="quiz-result" id="quizResult1"></div>
+            </div>
+
+            <!-- 문제 2 -->
+            <div class="quiz-item">
+                <div class="quiz-question">
+                    ❓ Q2. "상덕이는 <b style="color:var(--primary-color);">지금 밥 먹고 있다</b>!"
+                </div>
+                <div class="quiz-buttons">
+                    <button class="btn-ox btn-o" onclick="checkQuiz(2, true)">O</button>
+                    <button class="btn-ox btn-x" onclick="checkQuiz(2, false)">X</button>
+                </div>
+                <div class="quiz-result" id="quizResult2"></div>
+            </div>
+
+            <!-- 문제 3 -->
+            <div class="quiz-item">
+                <div class="quiz-question">
+                    ❓ Q3. "상덕이는 <b style="color:var(--primary-color);">화학을 제일 좋아한다</b>!"
+                </div>
+                <div class="quiz-buttons">
+                    <button class="btn-ox btn-o" onclick="checkQuiz(3, true)">O</button>
+                    <button class="btn-ox btn-x" onclick="checkQuiz(3, false)">X</button>
+                </div>
+                <div class="quiz-result" id="quizResult3"></div>
+            </div>
+        </div>
+
+        <!-- 섹션 3: 오늘 점심 메뉴 추천 -->
+        <div class="section-title">오늘의 점심 메뉴 추천기</div>
+        <div class="arcade-box lunch-box">
+            <div class="menu-display" id="menuDisplay">🎲 어떤 맛있는 걸 먹을까?</div>
+            <button class="btn-action" onclick="recommendLunch()">🍱 메뉴 뽑기 버튼 누르기!</button>
+        </div>
+
+        <!-- 섹션 4: 10초 광클 미니게임 -->
+        <div class="section-title">10초 마우스 광클 챌린지</div>
+        <div class="arcade-box game-box">
+            <div class="game-stats">
+                <div>⏳ 남은 시간: <span id="timeText" style="color:var(--primary-color); font-weight:bold;">10</span>초</div>
+                <div>💥 클릭 수: <span id="scoreText" style="color:var(--secondary-color); font-weight:bold;">0</span>회</div>
+            </div>
+            <button class="btn-clicker" id="clickerBtn" onclick="handleClicker()">🎮 게임 시작 (터치!)</button>
+        </div>
+
+        <footer>
+            <p>© 2026 박상덕의 8-BIT RETRO WORLD | ALL RIGHTS RESERVED ✨</p>
+        </footer>
+    </div>
+
+    <script>
+        /* ==================== 1. 마우스/터치 반짝이 파티클 효과 ==================== */
+        const canvas = document.getElementById('sparkleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Sparkle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4; // 픽셀 느낌의 크기
+                this.speedX = (Math.random() - 0.5) * 3;
+                this.speedY = (Math.random() - 0.5) * 3;
+                this.color = getComputedStyle(document.body).getPropertyValue('--sparkle-color').trim() || '#ff3385';
+                this.life = 100;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 3;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = Math.max(this.life / 100, 0);
+                // 네모난 픽셀 모양 반짝이
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function createSparkles(e) {
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                for (let i = 0; i < 2; i++) {
+                    particles.push(new Sparkle(x, y));
+                }
+            }
+        }
+
+        window.addEventListener('mousemove', createSparkles);
+        window.addEventListener('touchmove', createSparkles);
+
+        function animateSparkles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animateSparkles);
+        }
+        animateSparkles();
+
+
+        /* ==================== 2. 카드 뒤집기 ==================== */
+        function flipCard(cardElement) {
+            cardElement.classList.toggle('flipped');
+        }
+
+
+        /* ==================== 3. OX 퀴즈 (3문제) ==================== */
+        const quizAnswers = {
+            1: { correct: true, success: '🎉 정답입니다! 이론 서적 읽으며 뇌 세척하는 걸 참 좋아해요!', fail: '😭 땡~! 놀랍게도 이론 서적 마니아랍니다!' },
+            2: { correct: false, success: '🎉 정답입니다! 아직 점심 메뉴 고르는 중이랍니다 💻', fail: '😭 땡~! 지금은 점심 메뉴 고민 중입니다!' },
+            3: { correct: false, success: '🎉 정답입니다! 화학보다는 생명과학을 좋아해요!', fail: '😭 땡~! 화학 수식만 보면 눈앞이 어지러워요 😵' }
+        };
+
+        function checkQuiz(quizNum, userAnswer) {
+            const quizResult = document.getElementById(`quizResult${quizNum}`);
+            const quizData = quizAnswers[quizNum];
+
+            if (userAnswer === quizData.correct) {
+                quizResult.style.color = '#2b8a3e';
+                quizResult.innerHTML = quizData.success;
+                // 축하 효과 (파티클 생성)
+                for (let i = 0; i < 25; i++) {
+                    particles.push(new Sparkle(window.innerWidth / 2 + (Math.random() - 0.5) * 200, window.innerHeight / 2 + (Math.random() - 0.5) * 200));
+                }
+            } else {
+                quizResult.style.color = '#e03131';
+                quizResult.innerHTML = quizData.fail;
+            }
+        }
+
+
+        /* ==================== 4. 랜덤 점심 메뉴 추천 (10가지 이상) ==================== */
+        const lunchMenus = [
+            "🍕 네모네모 8비트 치즈 피자",
+            "🍔 뾰족뾰족 도트 감성 수제버거",
+            "🍜 레트로 얼큰 라면 한 그릇",
+            "🍣 반짝반짝 초밥 세트",
+            "🍛 우주 최강 카레라이스",
+            "🍲 픽셀 보글보글 김치찌개",
+            "🍝 말랑말랑 크림 파스타",
+            "🍡 떡볶이 & 바삭 튀김",
+            "🍱 추억의 옛날 도시락",
+            "🥩 육즙 가득 돈가스",
+            "🥗 파스텔 샐러드 보울",
+            "🥟 촉촉 갓 찐 만두"
+        ];
+
+        function recommendLunch() {
+            const menuDisplay = document.getElementById('menuDisplay');
+            let count = 0;
+            
+            // 8비트 슬롯머신 느낌의 텍스트 교체 효과
+            const interval = setInterval(() => {
+                const tempIndex = Math.floor(Math.random() * lunchMenus.length);
+                menuDisplay.textContent = lunchMenus[tempIndex];
+                count++;
+                
+                if (count > 10) {
+                    clearInterval(interval);
+                    const finalIndex = Math.floor(Math.random() * lunchMenus.length);
+                    menuDisplay.textContent = `✨ [추천] ${lunchMenus[finalIndex]} ✨`;
+                }
+            }, 80);
+        }
+
+
+        /* ==================== 5. 10초 광클 미니게임 ==================== */
+        let score = 0;
+        let timeLeft = 10;
+        let timer = null;
+        let gameActive = false;
+
+        function handleClicker() {
+            const btn = document.getElementById('clickerBtn');
+            const timeText = document.getElementById('timeText');
+            const scoreText = document.getElementById('scoreText');
+
+            if (!gameActive && timeLeft === 10) {
+                // 게임 시작
+                gameActive = true;
+                score = 1;
+                scoreText.textContent = score;
+                btn.textContent = '🔥 광클!! 더 빠르게!! 🔥';
+
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timeText.textContent = timeLeft;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        gameActive = false;
+                        btn.textContent = '🔄 다시 도전하기!';
+                        
+                        let rank = '🥉 초보 게이머';
+                        if (score >= 60) rank = '👑 신의 손 (광클 마스터)';
+                        else if (score >= 40) rank = '🥇 8비트 고수';
+                        else if (score >= 20) rank = '🥈 평범한 중수';
+
+                        setTimeout(() => {
+                            alert(`🎉 시간 종료!\n최종 기록: ${score}회 클릭!\n칭호: [${rank}]`);
+                            // 리셋 준비
+                            timeLeft = 10;
+                            timeText.textContent = timeLeft;
+                        }, 100);
+                    }
+                }, 1000);
+            } else if (gameActive) {
+                // 게임 진행 중 카운트
+                score++;
+                scoreText.textContent = score;
+                
+                // 클릭 시 주변에 반짝이 팡팡
+                const rect = btn.getBoundingClientRect();
+                for (let i = 0; i < 3; i++) {
+                    particles.push(new Sparkle(
+                        rect.left + Math.random() * rect.width,
+                        rect.top + Math.random() * rect.height
+                    ));
+                }
+            } else {
+                // 재시작
+                score = 0;
+                timeLeft = 10;
+                scoreText.textContent = score;
+                timeText.textContent = timeLeft;
+                btn.textContent = '🎮 게임 시작 (터치!)';
+            }
+        }
+    </script>
+</body>
+</html>
