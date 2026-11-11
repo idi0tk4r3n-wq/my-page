@@ -11,19 +11,19 @@
     <style>
         /* ==================== 1. CSS 변수 및 기본 스타일 ==================== */
         :root {
-            /* 라이트 테마 (밝은 파스텔 8비트) */
-            --bg-color: #ffd6e8;
-            --bg-pattern: #ffc0d9;
-            --container-bg: #fff0f6;
+            /* 알록달록 상큼한 픽셀 파스텔 8비트 컬러 팔레트 */
+            --bg-color: #ffdce5;
+            --bg-pattern: #f3b0c3;
+            --container-bg: #fff5fa;
             --card-bg: #ffffff;
-            --card-back-bg: #ffe3ec;
-            --text-color: #4a2e35;
-            --primary-color: #ff5c8d;
-            --secondary-color: #845ef7;
-            --accent-color: #ffb703;
-            --border-color: #4a2e35;
-            --shadow-color: rgba(74, 46, 53, 0.4);
-            --sparkle-color: #ff3385;
+            --card-back-bg: #e2f0cb;
+            --text-color: #3d2c33;
+            --primary-color: #ff6b8b;
+            --secondary-color: #7052ff;
+            --accent-color: #ffd166;
+            --border-color: #4a343d;
+            --shadow-color: rgba(74, 52, 61, 0.35);
+            --sparkle-color: #ff527b;
             --pixel-border: 4px solid var(--border-color);
         }
 
@@ -38,8 +38,8 @@
             padding: 20px 10px;
             font-family: 'DungGeunMo', monospace;
             background-color: var(--bg-color);
-            background-image: radial-gradient(var(--bg-pattern) 15%, transparent 16%);
-            background-size: 20px 20px;
+            background-image: radial-gradient(var(--bg-pattern) 18%, transparent 19%);
+            background-size: 22px 22px;
             color: var(--text-color);
             transition: background-color 0.4s ease, color 0.4s ease;
             overflow-x: hidden;
@@ -94,11 +94,11 @@
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             background: var(--accent-color);
-            color: #000;
+            color: #2b1e23;
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 16px;
             border: 2px solid var(--border-color);
             border-radius: 20px;
             font-weight: bold;
@@ -106,7 +106,7 @@
 
         /* 섹션 공통 스타일 */
         .section-title {
-            font-size: 1.3rem;
+            font-size: 1.45rem;
             color: var(--secondary-color);
             margin-bottom: 15px;
             display: flex;
@@ -184,7 +184,7 @@
         }
 
         .card-front {
-            background-color: var(--card-bg);
+            background-color: #ffffff;
             color: var(--text-color);
         }
 
@@ -200,41 +200,43 @@
         }
 
         .card-front .card-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--primary-color);
         }
 
         .card-front .click-hint {
-            font-size: 0.8rem;
-            color: var(--secondary-color);
+            font-size: 1.05rem;
+            color: #3b2c5d;
             margin-top: 8px;
-            background: var(--card-back-bg);
-            padding: 2px 8px;
-            border-radius: 10px;
+            background: #ffdfba;
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .card-back {
-            background-color: var(--card-back-bg);
+            background-color: #bae1ff;
             color: var(--text-color);
             transform: rotateY(180deg);
             justify-content: center;
         }
 
         .card-back p {
-            font-size: 0.95rem;
+            font-size: 1.15rem;
             line-height: 1.5;
             word-break: keep-all;
             margin: 0;
+            font-weight: bold;
         }
 
         /* ==================== 3. OX 퀴즈 섹션 ==================== */
         .quiz-question {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             text-align: center;
             margin-bottom: 20px;
-            background: var(--card-back-bg);
-            padding: 12px;
+            background: #ffffba;
+            padding: 14px;
             border-radius: 8px;
             border: 2px dashed var(--border-color);
         }
@@ -258,13 +260,13 @@
         }
 
         .btn-o {
-            background: #51cf66;
-            color: white;
+            background: #7bdff2;
+            color: #1a4959;
         }
 
         .btn-x {
-            background: #ff6b6b;
-            color: white;
+            background: #ff928b;
+            color: #5c1813;
         }
 
         .btn-ox:active {
@@ -275,7 +277,7 @@
         .quiz-result {
             margin-top: 15px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             font-weight: bold;
             min-height: 30px;
         }
@@ -286,17 +288,17 @@
         }
 
         .menu-display {
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: bold;
             min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--card-back-bg);
+            background: #b5ead7;
             border: 3px solid var(--border-color);
             border-radius: 8px;
             margin-bottom: 15px;
-            color: var(--primary-color);
+            color: #1d4d3e;
             padding: 10px;
         }
 
@@ -304,7 +306,7 @@
             background: var(--primary-color);
             color: white;
             font-family: 'DungGeunMo', monospace;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             padding: 12px 24px;
             border: 3px solid var(--border-color);
             border-radius: 8px;
@@ -327,10 +329,10 @@
         .game-stats {
             display: flex;
             justify-content: space-around;
-            font-size: 1.2rem;
+            font-size: 1.35rem;
             margin-bottom: 15px;
-            background: var(--card-back-bg);
-            padding: 10px;
+            background: #e2f0cb;
+            padding: 12px;
             border-radius: 8px;
             border: 2px solid var(--border-color);
         }
@@ -339,7 +341,7 @@
             width: 100%;
             max-width: 300px;
             height: 80px;
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             background: var(--accent-color);
             color: #000;
             border: 4px solid var(--border-color);
@@ -365,8 +367,9 @@
         footer {
             text-align: center;
             margin-top: 30px;
-            font-size: 0.85rem;
-            opacity: 0.8;
+            font-size: 1rem;
+            font-weight: bold;
+            opacity: 0.85;
         }
 
         /* 모바일 대응 레이아웃 조절 */
@@ -414,7 +417,7 @@
                     <div class="card-front">
                         <div class="icon">🎨</div>
                         <div class="card-title">그림 그리기</div>
-                        <div class="click-hint">터치해서 이유 보기!</div>
+                        <div class="click-hint">터치해서 뒤집어 봐!</div>
                     </div>
                     <div class="card-back">
                         <p>🎨 심신 안정에도 도움이 되고, 무엇보다 재밌어!</p>
@@ -427,7 +430,7 @@
                     <div class="card-front">
                         <div class="icon">🎧</div>
                         <div class="card-title">노래 듣기</div>
-                        <div class="click-hint">터치해서 이유 보기!</div>
+                        <div class="click-hint">터치해서 뒤집어 봐!</div>
                     </div>
                     <div class="card-back">
                         <p>🎵 노래를 들으면서 얼마든지 상상의 나래로 빠져들 수 있어!</p>
